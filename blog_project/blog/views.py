@@ -2,6 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views.generic import (
+    DeleteView,
     CreateView,
     ListView,
     DetailView,
@@ -24,12 +25,29 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        print(f'Błędy: {form.errors}')
+        return super().form_invalid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        print('Rozpoczęcie przetwarzania żądanie')
+        return super().dispatch(request, *args, **kwargs)
+
 
 class PostListView(ListView):
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
     queryset = Post.objects.filter(is_published=True).order_by('-published_date') #mozna zamiast orderby dodac class Meta do modelu z glopbalnym sortowaniem
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search', '')
+        status = self.request.GET.get('status', '')
+        if search:
+            queryset = queryset.filter(title__icontains=search).sort()
+        if status:
+            queryset = queryset.filter(is_published=True)
+        return queryset
 
 class PostDetailView(DetailView):
     model = Post
@@ -57,6 +75,11 @@ class LoginView(FormView):
         login(self.request, user)
         return super().form_valid(form)
 
+
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'blog/post_confirm_delete.html'
+    succes_url = reverse_lazy('blog:post_list')
 
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
