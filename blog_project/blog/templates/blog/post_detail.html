@@ -9,5 +9,10 @@
     <p>Autor: <strong>{{ post.author.username }}</strong></p>
     <p>{{ post.published_date|date:"d.m.Y H:i" }}</p>
     <p>{{ post.content }}</p>
+
+    {% if user == post.author %}
+        <a href="{% url 'blog:post_edit' post.pk %}">Edytuj</a>
+        <a href="{% url 'blog:post_delete' post.pk %}">Usuń</a>
+    {% endif %}
 </body>
 </html>
