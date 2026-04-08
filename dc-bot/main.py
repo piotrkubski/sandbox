@@ -1,5 +1,10 @@
 import discord
 from discord.ext import commands
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -25,4 +30,4 @@ async def on_ready():
 async def hello(ctx):
     await ctx.send('Hello, I am Kevin')
 
-client.run('MTQ5MTQ5NjQxOTQzNjI2OTY2OQ.GHdbmz.mhAlGYXUdQk5SczESQwxxzwxb-2jj7EYeMjtjE')
+client.run(TOKEN)
