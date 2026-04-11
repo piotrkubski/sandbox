@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Notatki ({{ notes | length }}){% endblock %}
+
+{% block content %}
+<h2>Twoje notatki ({{ notes | length }})</h2>
+
+{% if notes %}
+    {% for note in notes %}
+    <article>
+        <h3>#{{ note.id }} — {{ note.title }}</h3>
+        <p>{{ note.content }}</p>
+    </article>
+    {% endfor %}
+{% else %}
+    <p>Brak notatek. Dodaj pierwszą przez POST /notes/</p>
+{% endif %}
+{% endblock %}
